@@ -65,7 +65,8 @@ const PROJECTS = [
     description:
       "Robot automatizado diseñado para cuidar el césped en superficies extensas. Tiene una aplicación que permitirá al usuario seleccionar la altura a la que desea que se corte el césped. Además, puede medir la temperatura y la humedad del ambiente, proporcionando información útil sobre las condiciones climáticas. Está equipado con múltiples cámaras que permiten al robot evitar obstáculos y seguir su propia ruta de manera eficiente.",
     github: "https://github.com/GMR-AI/GMR-AI",
-    image: "/projects/gmrai.webp",
+    link: "https://rlpengineeringschooluab2024.wordpress.com/2024/07/04/gmr-ai/",
+    image: "/projects/gmrai.png",
     tags: [TAGS.PYTHON, TAGS.ROS2, TAGS.C, TAGS.CMAKE, TAGS.LUA, TAGS.CPLUSPLUS],
   },
   {
@@ -73,7 +74,7 @@ const PROJECTS = [
     description:
       "El proyecto MyGMR consiste en un backend que se ejecuta en Google Cloud App Engine y una aplicación móvil desarrollada con Flutter para Android. Este proyecto permite a los usuarios gestionar dispositivos GMR y sus tareas asociadas.",
     github: "https://github.com/GMR-AI/MyGMR",
-    image: "/projects/mygmr.webp",
+    image: "/projects/mygmr.png",
     tags: [TAGS.DART, TAGS.PYTHON],
   },
   {
@@ -81,7 +82,7 @@ const PROJECTS = [
     description:
       "El proyecto de Reconstrucción 3D es un programa en Python capaz de realizar reconstrucción 3D a partir de imágenes 2D que cubren todos los ángulos del objeto que se desea reconstruir, utilizando la técnica de Estructura a partir del Movimiento (SfM).",
     github: "https://github.com/GMR-AI/3D-Reconstruction",
-    image: "/projects/3d.webp",
+    image: "/projects/3d.png",
     tags: [TAGS.PYTHON],
   },
   {
@@ -89,7 +90,7 @@ const PROJECTS = [
     description:
       "Desarrollé un proyecto de aprendizaje automático para predecir la lluvia en Australia utilizando un conjunto de datos de Kaggle, empleando varios clasificadores para las predicciones y centrándome en mejorar la precisión de la predicción.",
     github: "https://github.com/YssfDevOps/Rain-In-Australia-Kaggle-Prediction-Project",
-    image: "/projects/rain.webp",
+    image: "/projects/rain.png",
     tags: [TAGS.PYTHON],
   },
   {
@@ -97,7 +98,7 @@ const PROJECTS = [
     description:
       "Juego que ofrece perspectivas en tercera y primera persona, con el objetivo de recolectar un número determinado de monedas dentro de un límite de tiempo, presenta variaciones en los tiempos del día en el entorno del juego e incluye un modo de juego libre.",
     github: "https://github.com/JG03dev/Treasure-track",
-    image: "/projects/treasure.webp",
+    image: "/projects/treasure.png",
     tags: [TAGS.CPLUSPLUS, TAGS.C, TAGS.CMAKE],
   },
 ]
@@ -105,48 +106,52 @@ const PROJECTS = [
 
 <div class="flex flex-col gap-y-16">
   {
-    PROJECTS.map(({ image, title, description, tags, github }) => (
+    PROJECTS.map(({ image, title, description, tags, link, github }) => (
     <article class="flex flex-col space-x-0 space-y-8 group md:flex-row md:space-x-8 md:space-y-0">
-  <div class="w-full md:w-1/2">
-    <div class="relative flex flex-col items-center col-span-6 row-span-5 gap-8 transition duration-500 ease-in-out transform shadow-xl overflow-clip rounded-xl sm:rounded-xl md:group-hover:-translate-y-1 md:group-hover:shadow-2xl lg:border lg:border-gray-800 lg:hover:border-gray-700 lg:hover:bg-gray-800/50">
-      <img alt="Recién llegado vs 5 años en Nueva Zelanda" class="object-cover object-top w-full h-56 transition duration-500 sm:h-full md:scale-110 md:group-hover:scale-105" loading="lazy" src={image} />
-    </div>
-  </div>
+      <div class="w-full md:w-1/2">
+        <div class="relative flex flex-col items-center col-span-6 row-span-5 gap-8 transition duration-500 ease-in-out transform shadow-xl overflow-clip rounded-xl sm:rounded-xl md:group-hover:-translate-y-1 md:group-hover:shadow-2xl lg:border lg:border-gray-800 lg:hover:border-gray-700 lg:hover:bg-gray-800/50">
+          <img alt={title} class="object-cover object-top w-full h-56 transition duration-500 sm:h-full md:scale-110 md:group-hover:scale-105" loading="eager" src={image} />
+        </div>
+      </div>
 
-  <div class="w-full md:w-1/2 md:max-w-lg">
-    <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-      {title}
-    </h3>
-    <div class="flex flex-wrap mt-2">
-      <ul class="flex flex-row mb-2 gap-x-2">
-          {tags.map((tag) => (
-            <li>
-              <span
-                class={`flex gap-x-2 rounded-full text-xs ${tag.class} py-1 px-2 `}
-              >
-                <tag.icon class="size-4" />
-                {tag.name}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div class="w-full md:w-1/2 md:max-w-lg">
+        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+          {title}
+        </h3>
+        <div class="flex flex-wrap mt-2">
+          <ul class="flex flex-row mb-2 gap-x-2">
+            {tags.map((tag) => (
+              <li>
+                <span class={`flex gap-x-2 rounded-full text-xs ${tag.class} py-1 px-2 `}>
+                  <tag.icon class="size-4" />
+                  {tag.name}
+                </span>
+              </li>
+            ))}
+          </ul>
 
-      <div class="mt-2 text-gray-700 dark:text-gray-400">{description}</div>
-      <footer class="flex items-end justify-start mt-4 gap-x-4">
-          {github && (
-            <LinkButton href={github}>
-              <GitHub class="size-6" />
-              Code
-              
-            </LinkButton>
-          )}
-        </footer>
-    </div>
-  </div>
-</article>
+          <div class="mt-2 text-gray-700 dark:text-gray-400">{description}</div>
+          <footer class="flex items-end justify-start mt-4 gap-x-4">
+            {github && (
+              <LinkButton href={github}>
+                <GitHub class="size-6" />
+                Code
+              </LinkButton>
+            )}
+            {link && (
+              <LinkButton href={link}>
+                <Link class="size-4" />
+                Preview
+              </LinkButton>
+            )}
+          </footer>
+        </div>
+      </div>
+    </article>
     ))
   }
 </div>
+
 
 
 
