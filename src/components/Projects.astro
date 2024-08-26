@@ -1,0 +1,158 @@
+---
+import GitHub from "./icons/GitHub.astro"
+import NextJS from "./icons/NextJS.astro"
+import Tailwind from "./icons/Tailwind.astro"
+import Link from "./icons/Link.astro"
+import LinkButton from "./LinkButton.astro"
+import CPlusPlus from "./icons/CPlusPlus.astro"
+import Python from "./icons/Python.astro"
+import ROS2 from "./icons/ROS2.astro"
+import C from "./icons/C.astro"
+import Lua from "./icons/Lua.astro"
+import CMake from "./icons/CMake.astro"
+import Dart from "./icons/Dart.astro"
+
+const TAGS = {
+  NEXT: {
+    name: "Next.js",
+    class: "bg-black text-white",
+    icon: NextJS,
+  },
+  TAILWIND: {
+    name: "Tailwind CSS",
+    class: "bg-[#003159] text-white",
+    icon: Tailwind,
+  },
+  CPLUSPLUS: {
+    name: "C++",
+    class: "bg-blue-700 text-white",
+    icon: CPlusPlus,
+  },
+  PYTHON: {
+    name: "Python",
+    class: "bg-yellow-500 text-black",
+    icon: Python,
+  },
+  ROS2: {
+    name: "ROS2",
+    class: "bg-gray-800 text-white",
+    icon: ROS2,
+  },
+  C: {
+    name: "C",
+    class: "bg-green-500 text-white",
+    icon: C,
+  },
+  LUA: {
+    name: "Lua",
+    class: "bg-blue-600 text-white",
+    icon: Lua,
+  },
+  CMAKE: {
+    name: "CMake",
+    class: "bg-red-500 text-white",
+    icon: CMake,
+  },
+  DART: {
+    name: "Dart",
+    class: "bg-blue-400 text-white",
+    icon: Dart,
+  },
+}
+const PROJECTS = [
+  {
+    title: "GMR-AI",
+    description:
+      "Robot automatizado diseñado para cuidar el césped en superficies extensas. Tiene una aplicación que permitirá al usuario seleccionar la altura a la que desea que se corte el césped. Además, puede medir la temperatura y la humedad del ambiente, proporcionando información útil sobre las condiciones climáticas. Está equipado con múltiples cámaras que permiten al robot evitar obstáculos y seguir su propia ruta de manera eficiente.",
+    github: "https://github.com/GMR-AI/GMR-AI",
+    image: "/projects/gmrai.webp",
+    tags: [TAGS.PYTHON, TAGS.ROS2, TAGS.C, TAGS.CMAKE, TAGS.LUA, TAGS.CPLUSPLUS],
+  },
+  {
+    title: "MyGMR",
+    description:
+      "El proyecto MyGMR consiste en un backend que se ejecuta en Google Cloud App Engine y una aplicación móvil desarrollada con Flutter para Android. Este proyecto permite a los usuarios gestionar dispositivos GMR y sus tareas asociadas.",
+    github: "https://github.com/GMR-AI/MyGMR",
+    image: "/projects/mygmr.webp",
+    tags: [TAGS.DART, TAGS.PYTHON],
+  },
+  {
+    title: "3D Reconstruction - SfM",
+    description:
+      "El proyecto de Reconstrucción 3D es un programa en Python capaz de realizar reconstrucción 3D a partir de imágenes 2D que cubren todos los ángulos del objeto que se desea reconstruir, utilizando la técnica de Estructura a partir del Movimiento (SfM).",
+    github: "https://github.com/GMR-AI/3D-Reconstruction",
+    image: "/projects/3d.webp",
+    tags: [TAGS.PYTHON],
+  },
+  {
+    title: "Rain In Australia Prediction",
+    description:
+      "Desarrollé un proyecto de aprendizaje automático para predecir la lluvia en Australia utilizando un conjunto de datos de Kaggle, empleando varios clasificadores para las predicciones y centrándome en mejorar la precisión de la predicción.",
+    github: "https://github.com/YssfDevOps/Rain-In-Australia-Kaggle-Prediction-Project",
+    image: "/projects/rain.webp",
+    tags: [TAGS.PYTHON],
+  },
+  {
+    title: "Treasure Track",
+    description:
+      "Juego que ofrece perspectivas en tercera y primera persona, con el objetivo de recolectar un número determinado de monedas dentro de un límite de tiempo, presenta variaciones en los tiempos del día en el entorno del juego e incluye un modo de juego libre.",
+    github: "https://github.com/JG03dev/Treasure-track",
+    image: "/projects/treasure.webp",
+    tags: [TAGS.CPLUSPLUS, TAGS.C, TAGS.CMAKE],
+  },
+]
+---
+
+<div class="flex flex-col gap-y-16">
+  {
+    PROJECTS.map(({ image, title, description, tags, link, github }) => (
+    <article class="flex flex-col space-x-0 space-y-8 group md:flex-row md:space-x-8 md:space-y-0">
+  <div class="w-full md:w-1/2">
+    <div class="relative flex flex-col items-center col-span-6 row-span-5 gap-8 transition duration-500 ease-in-out transform shadow-xl overflow-clip rounded-xl sm:rounded-xl md:group-hover:-translate-y-1 md:group-hover:shadow-2xl lg:border lg:border-gray-800 lg:hover:border-gray-700 lg:hover:bg-gray-800/50">
+      <img alt="Recién llegado vs 5 años en Nueva Zelanda" class="object-cover object-top w-full h-56 transition duration-500 sm:h-full md:scale-110 md:group-hover:scale-105" loading="lazy" src={image} />
+    </div>
+  </div>
+
+  <div class="w-full md:w-1/2 md:max-w-lg">
+    <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+      {title}
+    </h3>
+    <div class="flex flex-wrap mt-2">
+      <ul class="flex flex-row mb-2 gap-x-2">
+          {tags.map((tag) => (
+            <li>
+              <span
+                class={`flex gap-x-2 rounded-full text-xs ${tag.class} py-1 px-2 `}
+              >
+                <tag.icon class="size-4" />
+                {tag.name}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+      <div class="mt-2 text-gray-700 dark:text-gray-400">{description}</div>
+      <footer class="flex items-end justify-start mt-4 gap-x-4">
+          {github && (
+            <LinkButton href={github}>
+              <GitHub class="size-6" />
+              Code
+              
+            </LinkButton>
+          )}
+          {link && (
+            <LinkButton href={link}>
+              <Link class="size-4" />
+              Preview
+            </LinkButton>
+          )}
+        </footer>
+    </div>
+  </div>
+</article>
+    ))
+  }
+</div>
+
+
+

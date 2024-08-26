@@ -1,0 +1,33 @@
+---
+import StudyItem from "./StudyItem.astro"
+const EXPERIENCIE = [
+  {
+    date: "Actualmente",
+    title: "Grado en Ingeniería Informática",
+    company: "Universitat Autònoma de Barcelona (UAB)",
+    description:"",
+  },
+  {
+    date: "2021-2021",
+    title: "Certificate of Proficiency B2",
+    company: "University of Oxford - Mordered",
+    description:"",
+  },
+  {
+    date: "2019 - 2021",
+    title: "Bachillerato Tecnológico",
+    company: "Instituto Escuela Municipal de Trabajo",
+    description:"",
+  },
+]
+---
+
+<ol class="relative mt-16">
+  {
+    EXPERIENCIE.map((experiencie) => (
+      <li class="">
+        <StudyItem {...experiencie} />
+      </li>
+    ))
+  }
+</ol>
