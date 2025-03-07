@@ -1,10 +1,96 @@
-<div class="flex items-center ">
-<span class="relative inline-flex overflow-hidden rounded-full p-[1px]">
-  <span
-    class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]"
-  ></span>
-  <div class="inline-flex items-center justify-center w-full px-3 py-1 text-sm text-green-800 bg-green-100 rounded-full cursor-pointer dark:bg-gray-800 dark:text-white/80 backdrop-blur-3xl whitespace-nowrap">
-    <slot />
-  </div>
-</span>
+---
+// Define un prop que determine el estado inicial
+const { status = "trabajando" } = Astro.props;
+---
+
+<div class="flex items-center">
+  <span 
+    id="status-badge"
+    class="relative inline-flex overflow-hidden rounded-full p-[1px] cursor-pointer" 
+    data-status={status}
+  >
+    <span
+      class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]"
+      id="badge-animation"
+    ></span>
+    <div 
+      id="badge-container"
+      class="inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full backdrop-blur-3xl whitespace-nowrap"
+    >
+      <span id="badge-text"></span>
+    </div>
+  </span>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Obtener el badge
+    const badge = document.getElementById('status-badge');
+    const badgeText = document.getElementById('badge-text');
+    const badgeContainer = document.getElementById('badge-container');
+    const badgeAnimation = document.getElementById('badge-animation');
+
+    if (badge && badgeText && badgeContainer && badgeAnimation) {
+      // Definir los textos según el estado
+      const statusConfig: { [key: string]: { text: string, textColor: string, bgColor: string, animation: string } } = {
+        disponible: {
+          text: "Disponible para trabajar",
+          textColor: "text-green-800 dark:text-green-400",
+          bgColor: "bg-green-100 dark:bg-green-900/30",
+          animation: "bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]"
+        },
+        trabajando: {
+          text: "Actualmente trabajando",
+          textColor: "text-red-800 dark:text-red-400",
+          bgColor: "bg-red-100 dark:bg-red-900/30",
+          animation: "bg-[conic-gradient(from_90deg_at_50%_50%,#E45151_0%,#552121_50%,#E45151_100%)]"
+        }
+      };
+
+      try {
+        // Configurar el texto inicial
+        let currentStatus: keyof typeof statusConfig = (badge.dataset.status as keyof typeof statusConfig) || 'disponible';
+        
+        if (!statusConfig[currentStatus]) {
+          console.error(`Estado no reconocido: ${currentStatus}`);
+          currentStatus = 'disponible'; // Valor por defecto si no existe
+        }
+        
+        // Función para actualizar apariencia
+        const updateBadge = (status: keyof typeof statusConfig) => {
+          const config = statusConfig[status];
+          badgeText.textContent = config.text;
+          
+          // Actualizar colores
+          badgeContainer.className = `inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full ${config.textColor} ${config.bgColor} backdrop-blur-3xl whitespace-nowrap`;
+          badgeAnimation.className = `absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${config.animation}`;
+        };
+        
+        // Configuración inicial
+        updateBadge(currentStatus);
+
+        // Alternar al hacer clic
+        badge.addEventListener('click', () => {
+          currentStatus = currentStatus === 'disponible' ? 'trabajando' : 'disponible';
+          updateBadge(currentStatus);
+          badge.dataset.status = currentStatus;
+          
+          // Guardar preferencia en localStorage
+          localStorage.setItem('badgeStatus', currentStatus);
+        });
+
+        // Cargar el estado guardado si existe
+        const savedStatus = localStorage.getItem('badgeStatus');
+        if (savedStatus && statusConfig[savedStatus]) {
+          currentStatus = savedStatus;
+          updateBadge(currentStatus);
+          badge.dataset.status = currentStatus;
+        }
+      } catch (error) {
+        console.error('Error al configurar el badge:', error);
+      }
+    } else {
+      console.error('No se encontraron los elementos del badge');
+    }
+  });
+</script>
