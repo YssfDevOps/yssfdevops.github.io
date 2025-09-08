@@ -1,6 +1,6 @@
 ---
 // Define un prop que determine el estado inicial
-const { status = "trabajando" } = Astro.props;
+const { status = "disponible" } = Astro.props;
 ---
 
 <div class="flex items-center">
@@ -48,44 +48,32 @@ const { status = "trabajando" } = Astro.props;
       };
 
       try {
-        // Configurar el texto inicial
-        let currentStatus: keyof typeof statusConfig = (badge.dataset.status as keyof typeof statusConfig) || 'disponible';
-        
+        // Usar solo el prop status
+        let currentStatus = (badge.dataset.status as keyof typeof statusConfig) || 'disponible';
+
         if (!statusConfig[currentStatus]) {
           console.error(`Estado no reconocido: ${currentStatus}`);
-          currentStatus = 'disponible'; // Valor por defecto si no existe
+          currentStatus = 'disponible';
         }
-        
+
         // Función para actualizar apariencia
         const updateBadge = (status: keyof typeof statusConfig) => {
           const config = statusConfig[status];
           badgeText.textContent = config.text;
-          
-          // Actualizar colores
           badgeContainer.className = `inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full ${config.textColor} ${config.bgColor} backdrop-blur-3xl whitespace-nowrap`;
           badgeAnimation.className = `absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${config.animation}`;
         };
-        
+
         // Configuración inicial
         updateBadge(currentStatus);
+        badge.dataset.status = String(currentStatus);
 
-        // Alternar al hacer clic
+        // Alternar al hacer clic (sin guardar en localStorage)
         badge.addEventListener('click', () => {
           currentStatus = currentStatus === 'disponible' ? 'trabajando' : 'disponible';
           updateBadge(currentStatus);
           badge.dataset.status = currentStatus;
-          
-          // Guardar preferencia en localStorage
-          localStorage.setItem('badgeStatus', currentStatus);
         });
-
-        // Cargar el estado guardado si existe
-        const savedStatus = localStorage.getItem('badgeStatus');
-        if (savedStatus && statusConfig[savedStatus]) {
-          currentStatus = savedStatus;
-          updateBadge(currentStatus);
-          badge.dataset.status = currentStatus;
-        }
       } catch (error) {
         console.error('Error al configurar el badge:', error);
       }

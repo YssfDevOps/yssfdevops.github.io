@@ -11,6 +11,9 @@ import C from "./icons/C.astro"
 import Lua from "./icons/Lua.astro"
 import CMake from "./icons/CMake.astro"
 import Dart from "./icons/Dart.astro"
+import OpenCV from "./icons/OpenCV.astro"
+import MediaPipe from "./icons/MediaPipe.astro"
+import PyTorch from "./icons/PyTorch.astro"
 
 const TAGS = {
   NEXT: {
@@ -58,8 +61,32 @@ const TAGS = {
     class: "bg-blue-400 text-white",
     icon: Dart,
   },
+    OPENCV: {
+    name: "OpenCV",
+    class: "bg-[#5C3EE8] text-white",
+    icon: OpenCV,
+  },
+  MEDIAPIPE: {
+    name: "MediaPipe",
+    class: "bg-[#00C2A0] text-white",
+    icon: MediaPipe,
+  },
+  PYTORCH: {
+    name: "PyTorch",
+    class: "bg-[#EE4C2C] text-white",
+    icon: PyTorch,
+  },
 }
 const PROJECTS = [
+  {
+    title: "Eye Tracker para Orientación Vocacional",
+    description:
+      "Aplicación de seguimiento ocular en tiempo real para comparar trayectorias de mirada con elecciones vocacionales explícitas, mejorando la orientación académica.",
+    github: "https://github.com/YssfDevOps/eye-tracker-vocacions",
+    link: "https://rlpengineeringschooluab2024.wordpress.com/2024/07/04/gmr-ai/",
+    image: "/projects/eyetracker.png",
+    tags: [TAGS.PYTHON, TAGS.OPENCV, TAGS.MEDIAPIPE, TAGS.PYTORCH],
+  },
   {
     title: "GMR-AI",
     description:
