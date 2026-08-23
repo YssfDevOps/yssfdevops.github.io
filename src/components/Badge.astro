@@ -1,84 +1,83 @@
 ---
-// Define un prop que determine el estado inicial
-const { status = "disponible" } = Astro.props;
+interface Props {
+  status?: "disponible" | "trabajando"
+  availableText: string
+  workingText: string
+}
+
+const {
+  status = "trabajando",
+  availableText,
+  workingText,
+} = Astro.props
 ---
 
 <div class="flex items-center">
-  <span 
+  <span
     id="status-badge"
-    class="relative inline-flex overflow-hidden rounded-full p-[1px] cursor-pointer" 
+    class="relative inline-flex overflow-hidden rounded-full p-[1px] cursor-pointer"
     data-status={status}
+    data-available={availableText}
+    data-working={workingText}
   >
     <span
-      class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]"
+      class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E45151_0%,#552121_50%,#E45151_100%)]"
       id="badge-animation"
     ></span>
-    <div 
+    <div
       id="badge-container"
-      class="inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full backdrop-blur-3xl whitespace-nowrap"
+      class="inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full text-red-800 dark:text-red-400 bg-red-100 dark:bg-red-900/30 backdrop-blur-3xl whitespace-nowrap"
     >
-      <span id="badge-text"></span>
+      <span id="badge-text">{workingText}</span>
     </div>
   </span>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Obtener el badge
-    const badge = document.getElementById('status-badge');
-    const badgeText = document.getElementById('badge-text');
-    const badgeContainer = document.getElementById('badge-container');
-    const badgeAnimation = document.getElementById('badge-animation');
+  function setupBadge() {
+    const badge = document.getElementById("status-badge")
+    const badgeText = document.getElementById("badge-text")
+    const badgeContainer = document.getElementById("badge-container")
+    const badgeAnimation = document.getElementById("badge-animation")
 
-    if (badge && badgeText && badgeContainer && badgeAnimation) {
-      // Definir los textos según el estado
-      const statusConfig: { [key: string]: { text: string, textColor: string, bgColor: string, animation: string } } = {
-        disponible: {
-          text: "Disponible para trabajar",
-          textColor: "text-green-800 dark:text-green-400",
-          bgColor: "bg-green-100 dark:bg-green-900/30",
-          animation: "bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]"
-        },
-        trabajando: {
-          text: "Actualmente trabajando",
-          textColor: "text-red-800 dark:text-red-400",
-          bgColor: "bg-red-100 dark:bg-red-900/30",
-          animation: "bg-[conic-gradient(from_90deg_at_50%_50%,#E45151_0%,#552121_50%,#E45151_100%)]"
-        }
-      };
+    if (!badge || !badgeText || !badgeContainer || !badgeAnimation) return
 
-      try {
-        // Usar solo el prop status
-        let currentStatus = (badge.dataset.status as keyof typeof statusConfig) || 'disponible';
-
-        if (!statusConfig[currentStatus]) {
-          console.error(`Estado no reconocido: ${currentStatus}`);
-          currentStatus = 'disponible';
-        }
-
-        // Función para actualizar apariencia
-        const updateBadge = (status: keyof typeof statusConfig) => {
-          const config = statusConfig[status];
-          badgeText.textContent = config.text;
-          badgeContainer.className = `inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full ${config.textColor} ${config.bgColor} backdrop-blur-3xl whitespace-nowrap`;
-          badgeAnimation.className = `absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${config.animation}`;
-        };
-
-        // Configuración inicial
-        updateBadge(currentStatus);
-        badge.dataset.status = String(currentStatus);
-
-        // Alternar al hacer clic (sin guardar en localStorage)
-        badge.addEventListener('click', () => {
-          currentStatus = currentStatus === 'disponible' ? 'trabajando' : 'disponible';
-          updateBadge(currentStatus);
-          badge.dataset.status = currentStatus;
-        });
-      } catch (error) {
-        console.error('Error al configurar el badge:', error);
-      }
-    } else {
-      console.error('No se encontraron los elementos del badge');
+    const statusConfig = {
+      disponible: {
+        text: badge.dataset.available || "",
+        textColor: "text-green-800 dark:text-green-400",
+        bgColor: "bg-green-100 dark:bg-green-900/30",
+        animation:
+          "bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]",
+      },
+      trabajando: {
+        text: badge.dataset.working || "",
+        textColor: "text-red-800 dark:text-red-400",
+        bgColor: "bg-red-100 dark:bg-red-900/30",
+        animation:
+          "bg-[conic-gradient(from_90deg_at_50%_50%,#E45151_0%,#552121_50%,#E45151_100%)]",
+      },
     }
-  });
+
+    let currentStatus =
+      (badge.dataset.status as keyof typeof statusConfig) || "trabajando"
+
+    const updateBadge = (status: keyof typeof statusConfig) => {
+      const config = statusConfig[status]
+      badgeText.textContent = config.text
+      badgeContainer.className = `inline-flex items-center justify-center w-full px-3 py-1 text-sm rounded-full ${config.textColor} ${config.bgColor} backdrop-blur-3xl whitespace-nowrap`
+      badgeAnimation.className = `absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${config.animation}`
+    }
+
+    updateBadge(currentStatus)
+
+    badge.onclick = () => {
+      currentStatus = currentStatus === "disponible" ? "trabajando" : "disponible"
+      updateBadge(currentStatus)
+      badge.dataset.status = currentStatus
+    }
+  }
+
+  setupBadge()
+  document.addEventListener("astro:page-load", setupBadge)
 </script>

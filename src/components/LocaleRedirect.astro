@@ -1,0 +1,134 @@
+---
+const COUNTRY_TO_LOCALE: Record<string, string> = {
+  ES: "es", MX: "es", AR: "es", CO: "es", CL: "es", PE: "es", VE: "es",
+  EC: "es", GT: "es", CU: "es", BO: "es", DO: "es", HN: "es", PY: "es",
+  SV: "es", NI: "es", CR: "es", PA: "es", UY: "es", GQ: "es", PR: "es",
+  FR: "fr", BE: "fr", MC: "fr", LU: "fr", SN: "fr", CI: "fr", CM: "fr",
+  CD: "fr", MG: "fr", HT: "fr", NE: "fr", ML: "fr", BF: "fr", TG: "fr",
+  GA: "fr", CG: "fr", BJ: "fr",
+  PT: "pt", BR: "pt", AO: "pt", MZ: "pt", CV: "pt", GW: "pt", ST: "pt", TL: "pt",
+  IT: "it", SM: "it", VA: "it",
+  SA: "ar", AE: "ar", EG: "ar", IQ: "ar", JO: "ar", KW: "ar", LB: "ar",
+  OM: "ar", QA: "ar", SY: "ar", YE: "ar", BH: "ar", PS: "ar", LY: "ar",
+  SD: "ar", MR: "ar", DZ: "ar", TN: "ar", MA: "ar",
+}
+
+const BROWSER_ALIASES: Record<string, string> = {
+  ca: "es",
+  zh: "en",
+  de: "en",
+  ja: "en",
+  ko: "en",
+  ru: "en",
+  nl: "en",
+}
+
+interface Props {
+  locale: string
+}
+
+const { locale } = Astro.props
+---
+
+<script is:inline define:vars={{ COUNTRY_TO_LOCALE, BROWSER_ALIASES, currentLocale: locale }}>
+  (function () {
+    var LOCALES = ["es", "en", "ar", "fr", "pt", "it"]
+    var DEFAULT_LOCALE = "es"
+
+    function isLocale(value) {
+      return LOCALES.indexOf(value) !== -1
+    }
+
+    function localePath(code) {
+      return code === DEFAULT_LOCALE ? "/" : "/" + code + "/"
+    }
+
+    function currentPathLocale() {
+      var parts = window.location.pathname.replace(/\/+$/, "").split("/").filter(Boolean)
+      var first = parts[0]
+      return isLocale(first) ? first : DEFAULT_LOCALE
+    }
+
+    function isBot() {
+      return /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|embedly|quora|pinterest|redditbot|whatsapp|telegrambot/i.test(
+        navigator.userAgent || ""
+      )
+    }
+
+    function matchBrowser() {
+      var languages = navigator.languages && navigator.languages.length
+        ? navigator.languages
+        : [navigator.language]
+      for (var i = 0; i < languages.length; i++) {
+        var raw = (languages[i] || "").toLowerCase()
+        var code = raw.split("-")[0]
+        if (isLocale(code)) return code
+        if (BROWSER_ALIASES[code] && isLocale(BROWSER_ALIASES[code])) {
+          return BROWSER_ALIASES[code]
+        }
+      }
+      return null
+    }
+
+    function redirectTo(code) {
+      if (code === currentPathLocale()) return
+      var target = localePath(code)
+      if (target !== window.location.pathname) {
+        window.location.replace(target)
+      }
+    }
+
+    if (isBot()) return
+
+    var params = new URLSearchParams(window.location.search)
+    var queryLang = params.get("lang")
+    if (queryLang && isLocale(queryLang)) {
+      try { localStorage.setItem("locale", queryLang) } catch (e) {}
+      if (queryLang !== currentPathLocale()) {
+        redirectTo(queryLang)
+        return
+      }
+    }
+
+    var saved = null
+    try { saved = localStorage.getItem("locale") } catch (e) {}
+
+    var pathLocale = currentPathLocale()
+
+    if (saved && isLocale(saved)) {
+      if (pathLocale === DEFAULT_LOCALE && saved !== DEFAULT_LOCALE && window.location.pathname === "/") {
+        redirectTo(saved)
+      } else if (isLocale(pathLocale)) {
+        try { localStorage.setItem("locale", pathLocale) } catch (e) {}
+      }
+      return
+    }
+
+    var fromBrowser = matchBrowser()
+    if (fromBrowser) {
+      try { localStorage.setItem("locale", fromBrowser) } catch (e) {}
+      redirectTo(fromBrowser)
+      return
+    }
+
+    var controller = typeof AbortController !== "undefined" ? new AbortController() : null
+    var timer = setTimeout(function () {
+      if (controller) controller.abort()
+      try { localStorage.setItem("locale", DEFAULT_LOCALE) } catch (e) {}
+    }, 2000)
+
+    fetch("https://ipwho.is/", controller ? { signal: controller.signal } : undefined)
+      .then(function (response) { return response.json() })
+      .then(function (data) {
+        clearTimeout(timer)
+        var country = (data && data.country_code) || ""
+        var detected = COUNTRY_TO_LOCALE[country] || "en"
+        try { localStorage.setItem("locale", detected) } catch (e) {}
+        redirectTo(detected)
+      })
+      .catch(function () {
+        clearTimeout(timer)
+        try { localStorage.setItem("locale", DEFAULT_LOCALE) } catch (e) {}
+      })
+  })()
+</script>

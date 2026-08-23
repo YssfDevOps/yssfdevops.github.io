@@ -1,31 +1,45 @@
 ---
- const personalImageAlt = "Youssef Cahouach"
+import { PROFILE, type Translation } from "@/i18n"
+
+interface Props {
+  t: Translation
+}
+
+const { t } = Astro.props
+const personalImageAlt = PROFILE.name
 ---
 
-<article class="flex flex-col items-center justify-center gap-8 text-gray-700 dark:text-gray-300 md:flex-row">
+<article
+  class="flex flex-col items-center justify-center gap-8 text-gray-700 dark:text-gray-300 md:flex-row"
+>
   <div
     class="[&>p]:mb-4 [&>p>strong]:text-yellow-500 dark:[&>p>strong]:text-yellow-100 [&>p>strong]:font-normal [&>p>strong]:font-mono text-pretty order-2 md:order-1"
   >
-    <p>
-      Me llamo Youssef y soy Ingeniero Informático, especializándome en la <strong>rama de Computación (Computer Science).</strong>
-    </p>
+    <p set:html={t.about.p1} />
+    <p set:html={t.about.p2} />
+    <p set:html={t.about.p3} />
 
-    <p>
-      A lo largo de mi formación, he tenido la oportunidad de trabajar en grandes proyectos que me han permitido adquirir 
-      una amplia experiencia en diversas áreas. He aprendido mucho sobre la <strong>creación de videojuegos</strong>, el 
-      <strong>desarrollo de 
-      aplicaciones</strong> y el tratamiento de máquinas industriales mediante programas como <strong>ROS 
-        (Robot Operating System).</strong>
-    </p>
-
-    <p>
-      Además, he profundizado en el campo del <strong>Machine Learning</strong>, incluyendo técnicas de 
-      <strong>aprendizaje supervisado</strong> y <strong>no supervisado</strong>, <strong>redes neuronales</strong> y 
-      <strong>visión por computadora</strong>. Esta experiencia me ha permitido desarrollar habilidades técnicas 
-      y analíticas que considero fundamentales para mi futuro profesional. 
-    </p>
+    <h3 class="mt-6 mb-3 text-lg font-semibold text-gray-800 dark:text-white">
+      {t.about.languagesTitle}
+    </h3>
+    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {
+        t.about.languages.map((language) => (
+          <li class="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5">
+            <span class="font-medium text-gray-800 dark:text-white">{language.name}</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{language.level}</span>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 
-  <img width="200" height="200" src="/me.png" alt={personalImageAlt} class="order-1 object-cover w-64 h-full p-1 md:order-2 rotate-3 lg:p-2 lg:w-64 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20 " style="object-position: 50% 50%">
-
+  <img
+    width="200"
+    height="200"
+    src={PROFILE.portrait}
+    alt={personalImageAlt}
+    class="order-1 object-cover w-64 h-full p-1 md:order-2 rotate-3 lg:p-2 lg:w-64 aspect-square rounded-2xl bg-black/20 dark:bg-yellow-500/5 ring-1 ring-black/70 dark:ring-white/20"
+    style="object-position: 50% 50%"
+  />
 </article>

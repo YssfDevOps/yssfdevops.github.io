@@ -1,0 +1,28 @@
+---
+import type { Translation } from "@/i18n"
+
+interface Props {
+  t: Translation
+}
+
+const { t } = Astro.props
+---
+
+<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {
+    t.skills.groups.map((group) => (
+      <article class="p-5 rounded-2xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5">
+        <h3 class="mb-3 text-lg font-semibold text-gray-800 dark:text-white">
+          {group.title}
+        </h3>
+        <ul class="flex flex-wrap gap-2">
+          {group.items.map((item) => (
+            <li class="px-3 py-1 text-sm rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-900 dark:text-yellow-200">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </article>
+    ))
+  }
+</div>
