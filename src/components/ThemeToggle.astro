@@ -75,54 +75,63 @@ const THEMES = [
 </style>
 
 <script is:inline>
-  const matchMedia = window.matchMedia("(prefers-color-scheme: dark)")
-  const themesMenu = document.getElementById("themes-menu")
+  ;(() => {
+    const matchMedia = window.matchMedia("(prefers-color-scheme: dark)")
 
-  const getThemePreference = () => {
-    if (typeof localStorage !== "undefined") {
-      return localStorage.getItem("theme") ?? "system"
+    const getThemePreference = () =>
+      (typeof localStorage !== "undefined" && localStorage.getItem("theme")) ||
+      "system"
+
+    const updateTheme = () => {
+      const themePreference = getThemePreference()
+      const isDark =
+        themePreference === "dark" ||
+        (themePreference === "system" && matchMedia.matches)
+
+      document.querySelectorAll(".theme-toggle-icon").forEach((element) => {
+        element.style.scale = element.id === themePreference ? "1" : "0"
+      })
+      document.documentElement.classList.toggle("dark", isDark)
     }
 
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  }
+    // (Re)bind the toggle button and menu options. This must run again after
+    // each client-side view transition because Astro swaps in fresh DOM nodes
+    // and does not re-execute this inline script.
+    const setupThemeToggle = () => {
+      const button = document.getElementById("theme-toggle-btn")
+      const themesMenu = document.getElementById("themes-menu")
+      if (!button || !themesMenu) return
 
-  const updateIcon = (themePreference) => {
-    document.querySelectorAll(".theme-toggle-icon").forEach((element) => {
-      element.style.scale = element.id === themePreference ? "1" : "0"
-    })
-  }
+      updateTheme()
 
-  const updateTheme = () => {
-    const themePreference = getThemePreference()
-    const isDark =
-      themePreference === "dark" ||
-      (themePreference === "system" && matchMedia.matches)
-
-    updateIcon(themePreference)
-    document.documentElement.classList[isDark ? "add" : "remove"]("dark")
-  }
-
-  updateTheme()
-  matchMedia.addEventListener("change", updateTheme)
-
-  document.addEventListener("click", () => themesMenu?.classList.remove("open"))
-
-  document.getElementById("theme-toggle-btn")?.addEventListener("click", (e) => {
-    e.stopPropagation()
-    document.getElementById("languages-menu")?.classList.remove("open")
-    const isClosed = !themesMenu.classList.contains("open")
-    themesMenu.classList[isClosed ? "add" : "remove"]("open")
-  })
-
-  document.querySelectorAll(".themes-menu-option").forEach((element) => {
-    element.addEventListener("click", (e) => {
-      const value = e.currentTarget.getAttribute("data-theme")
-      if (value) {
-        localStorage.setItem("theme", value)
-        updateTheme()
+      button.onclick = (e) => {
+        e.stopPropagation()
+        document.getElementById("languages-menu")?.classList.remove("open")
+        const isClosed = !themesMenu.classList.contains("open")
+        themesMenu.classList.toggle("open", isClosed)
       }
-    })
-  })
+
+      themesMenu.querySelectorAll(".themes-menu-option").forEach((element) => {
+        element.onclick = () => {
+          const value = element.getAttribute("data-theme")
+          if (value) {
+            localStorage.setItem("theme", value)
+            updateTheme()
+          }
+          themesMenu.classList.remove("open")
+        }
+      })
+    }
+
+    // Listeners registered on the persistent document (once, since this inline
+    // script is not re-run across view transitions).
+    document.addEventListener("click", () =>
+      document.getElementById("themes-menu")?.classList.remove("open")
+    )
+    matchMedia.addEventListener("change", updateTheme)
+    document.addEventListener("astro:after-swap", updateTheme)
+    document.addEventListener("astro:page-load", setupThemeToggle)
+
+    setupThemeToggle()
+  })()
 </script>
