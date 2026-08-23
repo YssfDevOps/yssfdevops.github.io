@@ -1,51 +1,67 @@
 ---
-const personalImageAlt = "Miguel Ángel"
 import Badge from "@/components/Badge.astro"
 import LinkedInIcon from "@/components/icons/LinkedIn.astro"
 import GitHubIcon from "@/components/icons/GitHub.astro"
 import MailIcon from "@/components/icons/Mail.astro"
 import SocialPill from "@/components/SocialPill.astro"
+import { PROFILE, type Translation } from "@/i18n"
+
+interface Props {
+  t: Translation
+}
+
+const { t } = Astro.props
+const personalImageAlt = PROFILE.name
 ---
 
 <div class="max-w-xl">
   <div class="flex gap-4 mb-4">
     <img
       class="rounded-full shadow-lg size-16"
-      src="/yssfdevops.webp"
+      src={PROFILE.photo}
       alt={personalImageAlt}
     />
     <a
-      href="https://linkedin.com/in/yssf-cahouach"
+      href={PROFILE.linkedin}
       target="_blank"
       rel="noopener"
       class="flex items-center transition md:justify-center md:hover:scale-105"
     >
-      <Badge>Disponible para trabajar</Badge>
+      <Badge
+        status="trabajando"
+        availableText={t.hero.badgeAvailable}
+        workingText={t.hero.badgeWorking}
+      />
     </a>
   </div>
   <h1
     class="text-4xl font-bold tracking-tight text-gray-800 sm:text-5xl dark:text-white"
   >
-    Buenas, soy Youssef
+    {t.hero.greeting}
   </h1>
   <p
     class="mt-6 text-xl text-gray-800 dark:[&>strong]:text-yellow-200 [&>strong]:text-yellow-500 [&>strong]:font-semibold dark:text-gray-300"
-  >
-    <strong
-      >Ingeniero Informático</strong> de Barcelona, España 🇪🇸. Especializado en Computer Science.
-  </p>
+    set:html={t.hero.bio}
+  />
+  <ul class="flex flex-wrap gap-2 mt-5">
+    {["Python", "AWS", "PySpark", "Redshift", "S3"].map((skill) => (
+      <li class="px-3 py-1 text-sm rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-800 dark:text-yellow-200">
+        {skill}
+      </li>
+    ))}
+  </ul>
   <nav class="flex flex-wrap gap-4 mt-8">
-    <SocialPill href="mailto:youssef.cah.7912@gmail.com">
+    <SocialPill href={`mailto:${PROFILE.email}`}>
       <MailIcon class="size-4" />
-      Contáctame
+      {t.hero.contact}
     </SocialPill>
-    <SocialPill href="https://linkedin.com/in/yssf-cahouach">
+    <SocialPill href={PROFILE.linkedin}>
       <LinkedInIcon class="size-4" />
       LinkedIn
     </SocialPill>
-    <SocialPill href="https://github.com/YssfDevOps">
+    <SocialPill href={PROFILE.github}>
       <GitHubIcon class="size-4" />
-      Github
+      GitHub
     </SocialPill>
   </nav>
 </div>

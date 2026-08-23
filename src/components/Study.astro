@@ -1,32 +1,19 @@
 ---
 import StudyItem from "./StudyItem.astro"
-const EXPERIENCIE = [
-  {
-    date: "Actualmente",
-    title: "Grado en Ingeniería Informática - Mención en Computación",
-    company: "Universitat Autònoma de Barcelona (UAB)",
-    description:"",
-  },
-  {
-    date: "2021-2021",
-    title: "Certificate of Proficiency B2",
-    company: "University of Oxford - Mordered",
-    description:"",
-  },
-  {
-    date: "2019 - 2021",
-    title: "Bachillerato Tecnológico",
-    company: "Instituto Escuela Municipal de Trabajo",
-    description:"",
-  },
-]
+import type { Translation } from "@/i18n"
+
+interface Props {
+  t: Translation
+}
+
+const { t } = Astro.props
 ---
 
 <ol class="relative mt-16">
   {
-    EXPERIENCIE.map((experiencie) => (
-      <li class="">
-        <StudyItem {...experiencie} />
+    t.education.items.map((item) => (
+      <li>
+        <StudyItem {...item} />
       </li>
     ))
   }

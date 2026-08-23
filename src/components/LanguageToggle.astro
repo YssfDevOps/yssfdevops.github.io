@@ -1,0 +1,118 @@
+---
+import LanguageIcon from "./icons/Language.astro"
+import { locales, localeMeta, localePath, type Locale } from "@/i18n"
+
+interface Props {
+  locale: Locale
+  label: string
+}
+
+const { locale, label } = Astro.props
+---
+
+<div class="relative ms-1 me-1">
+  <button
+    id="language-toggle-btn"
+    type="button"
+    class="appearance-none border-none flex hover:scale-125 transition"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls="languages-menu"
+  >
+    <span class="sr-only">{label}</span>
+    <LanguageIcon class="size-5" />
+  </button>
+  <div
+    id="languages-menu"
+    class="absolute hidden top-8 end-0 text-sm p-1 min-w-[10.5rem] rounded-md border border-gray-100 bg-white/90 dark:bg-gray-900/90 dark:border-gray-500/20 shadow-[0_3px_10px_rgb(0,0,0,0.2)] backdrop-blur-md z-20"
+    role="listbox"
+    aria-label={label}
+  >
+    <ul>
+      {
+        locales.map((code) => {
+          const meta = localeMeta[code]
+          const active = code === locale
+          return (
+            <li>
+              <a
+                href={localePath(code)}
+                hreflang={meta.htmlLang}
+                data-locale={code}
+                lang={meta.htmlLang}
+                role="option"
+                aria-selected={active}
+                class:list={[
+                  "language-menu-option flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-neutral-400/40 dark:hover:bg-gray-500/50",
+                  active && "text-yellow-500 dark:text-yellow-400 font-semibold",
+                ]}
+              >
+                <span class="w-6 text-center" aria-hidden="true">
+                  {meta.flag}
+                </span>
+                <span>{meta.nativeName}</span>
+              </a>
+            </li>
+          )
+        })
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  #languages-menu.open {
+    display: inline;
+    animation: scale-up-center-lang 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+
+  @keyframes scale-up-center-lang {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  function setupLanguageToggle() {
+    const button = document.getElementById("language-toggle-btn")
+    const menu = document.getElementById("languages-menu")
+    if (!button || !menu) return
+
+    const close = () => {
+      menu.classList.remove("open")
+      button.setAttribute("aria-expanded", "false")
+    }
+
+    button.onclick = (event) => {
+      event.stopPropagation()
+      document.getElementById("themes-menu")?.classList.remove("open")
+      const isClosed = !menu.classList.contains("open")
+      menu.classList.toggle("open", isClosed)
+      button.setAttribute("aria-expanded", String(isClosed))
+    }
+
+    menu.querySelectorAll<HTMLAnchorElement>(".language-menu-option").forEach((link) => {
+      link.onclick = () => {
+        const next = link.dataset.locale
+        if (next) {
+          localStorage.setItem("locale", next)
+        }
+      }
+    })
+
+    document.addEventListener("click", close)
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") close()
+    })
+  }
+
+  setupLanguageToggle()
+  document.addEventListener("astro:page-load", setupLanguageToggle)
+</script>

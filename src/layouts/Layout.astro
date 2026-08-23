@@ -3,25 +3,99 @@ import "@fontsource-variable/onest"
 
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
+import LocaleRedirect from "../components/LocaleRedirect.astro"
 import { ViewTransitions } from "astro:transitions"
+import {
+  SITE_URL,
+  PROFILE,
+  locales,
+  localeMeta,
+  localePath,
+  useTranslations,
+  type Locale,
+} from "@/i18n"
 
 interface Props {
-  title: string
-  description: string
+  title?: string
+  description?: string
+  locale?: Locale
 }
 
-const { description, title } = Astro.props
+const locale = (Astro.props.locale ?? "es") as Locale
+const t = useTranslations(locale)
+const title = Astro.props.title ?? t.meta.title
+const description = Astro.props.description ?? t.meta.description
+const meta = localeMeta[locale]
+const canonical = new URL(localePath(locale), SITE_URL).href
+const ogImage = new URL(PROFILE.photo, SITE_URL).href
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: PROFILE.name,
+  url: canonical,
+  image: ogImage,
+  email: PROFILE.email,
+  jobTitle: PROFILE.role,
+  worksFor: {
+    "@type": "Organization",
+    name: PROFILE.company,
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Barcelona",
+    addressCountry: "ES",
+  },
+  sameAs: [PROFILE.linkedin, PROFILE.github],
+}
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={meta.htmlLang} dir={meta.dir}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
+    <meta name="author" content={PROFILE.name} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    {
+      locales.map((code) => (
+        <link
+          rel="alternate"
+          hreflang={localeMeta[code].htmlLang}
+          href={new URL(localePath(code), SITE_URL).href}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL("/en/", SITE_URL).href} />
     <meta name="generator" content={Astro.generator} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={meta.og} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <title>{title}</title>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+          return localStorage.getItem("theme")
+        }
+        return "system"
+      })()
+      const isDark =
+        theme === "dark" ||
+        (theme === "system" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      document.documentElement.classList.toggle("dark", isDark)
+    </script>
+    <LocaleRedirect locale={locale} />
     <ViewTransitions />
   </head>
 
@@ -32,9 +106,9 @@ const { description, title } = Astro.props
       dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"
     >
     </div>
-    <Header />
+    <Header locale={locale} t={t} />
     <slot />
-    <Footer />
+    <Footer locale={locale} t={t} />
     <style is:global>
       :root {
         color-scheme: light dark;
@@ -43,6 +117,12 @@ const { description, title } = Astro.props
       html {
         font-family: "Onest Variable", system-ui, sans-serif;
         scroll-behavior: smooth;
+      }
+
+      html[lang="ar"] {
+        font-family:
+          "Noto Naskh Arabic", "Noto Sans Arabic", "Onest Variable", system-ui,
+          sans-serif;
       }
 
       body {
@@ -59,10 +139,8 @@ const { description, title } = Astro.props
         }
       }
 
-      @media (prefers-color-scheme: dark) {
-        body {
-          color: rgba(255, 255, 255, 0.9);
-        }
+      html.dark body {
+        color: rgba(255, 255, 255, 0.9);
       }
 
       #header-nav {

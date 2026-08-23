@@ -7,4 +7,11 @@ import robotsTxt from "astro-robots-txt"
 export default defineConfig({
   integrations: [tailwind(), robotsTxt()],
   site: 'https://yssfdevops.github.io',
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en', 'ar', 'fr', 'pt', 'it'],
+    routing: {
+      prefixDefaultLocale: false
+    }
+  }
 })

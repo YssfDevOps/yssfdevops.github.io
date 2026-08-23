@@ -1,32 +1,22 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro"
+import LanguageToggle from "./LanguageToggle.astro"
+import { PROFILE, localePath, type Locale, type Translation } from "@/i18n"
+
+interface Props {
+  locale: Locale
+  t: Translation
+}
+
+const { locale, t } = Astro.props
+const home = localePath(locale)
 
 const navItems = [
-  {
-    title: "Experiencia",
-    label: "experiencia",
-    url: "/#experiencia",
-  },
-  {
-    title: "Educación",
-    label: "estudio",
-    url: "/#estudio",
-  },
-  {
-    title: "Proyectos",
-    label: "proyectos",
-    url: "/#proyectos",
-  },
-  {
-    title: "Sobre mí",
-    label: "sobre-mi",
-    url: "/#sobre-mi",
-  },
-  {
-    title: "Contacto",
-    label: "contacto",
-    url: "mailto:youssef.cah.7912@gmail.com",
-  },
+  { title: t.nav.experience, label: "experiencia", url: `${home}#experiencia` },
+  { title: t.nav.education, label: "estudio", url: `${home}#estudio` },
+  { title: t.nav.projects, label: "proyectos", url: `${home}#proyectos` },
+  { title: t.nav.about, label: "sobre-mi", url: `${home}#sobre-mi` },
+  { title: t.nav.contact, label: "contacto", url: `mailto:${PROFILE.email}` },
 ]
 ---
 
@@ -34,12 +24,13 @@ const navItems = [
   class="fixed top-0 z-10 flex items-center justify-center w-full mx-auto mt-2"
 >
   <nav
-    class="flex px-3 text-sm font-medium rounded-full text-gray-600 dark:text-gray-200 justify-center items-center"
+    class="flex px-2 sm:px-3 text-[11px] sm:text-sm font-medium rounded-full text-gray-600 dark:text-gray-200 justify-center items-center max-w-[calc(100%-0.75rem)] overflow-x-auto"
   >
     {
       navItems.map((link) => (
         <a
-          class="relative block px-2 py-2 transition hover:text-yellow-500 dark:hover:text-yellow-400"
+          class="relative block px-1.5 sm:px-2 py-2 transition hover:text-yellow-500 dark:hover:text-yellow-400 whitespace-nowrap"
+          data-nav-link
           aria-label={link.label}
           href={link.url}
         >
@@ -47,16 +38,22 @@ const navItems = [
         </a>
       ))
     }
-    <ThemeToggle />
+    <LanguageToggle locale={locale} label={t.language.label} />
+    <ThemeToggle
+      label={t.theme.label}
+      light={t.theme.light}
+      dark={t.theme.dark}
+      system={t.theme.system}
+    />
   </nav>
 </header>
 
 <script>
   document.addEventListener("astro:page-load", () => {
     const sections = document.querySelectorAll("section")
-    const navItems = document.querySelectorAll("header nav a")
+    const navItems = document.querySelectorAll("header nav a[data-nav-link]")
 
-    const callback = (entries: any[]) => {
+    const callback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           navItems.forEach((item) => {
@@ -80,7 +77,6 @@ const navItems = [
       observer.observe(section)
     })
 
-    // Cleanup function
     document.onvisibilitychange = () => {
       if (document.visibilityState === "hidden") {
         observer.disconnect()

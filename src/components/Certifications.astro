@@ -1,0 +1,26 @@
+---
+import type { Translation } from "@/i18n"
+
+interface Props {
+  t: Translation
+}
+
+const { t } = Astro.props
+---
+
+<div class="grid gap-4 sm:grid-cols-2">
+  {
+    t.certifications.items.map((item) => (
+      <article class="p-5 rounded-2xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5">
+        <p class="text-sm text-yellow-600 dark:text-yellow-300">{item.issuer}</p>
+        <h3 class="mt-1 text-lg font-semibold text-gray-800 dark:text-white">
+          {item.title}
+        </h3>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{item.date}</p>
+        {item.credential && (
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">{item.credential}</p>
+        )}
+      </article>
+    ))
+  }
+</div>
