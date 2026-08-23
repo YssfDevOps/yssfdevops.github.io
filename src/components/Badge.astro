@@ -15,7 +15,7 @@ const {
 <div class="flex items-center">
   <span
     id="status-badge"
-    class="relative inline-flex overflow-hidden rounded-full p-[1px] cursor-pointer"
+    class="relative inline-flex overflow-hidden rounded-full p-[1px]"
     data-status={status}
     data-available={availableText}
     data-working={workingText}
@@ -59,7 +59,7 @@ const {
       },
     }
 
-    let currentStatus =
+    const currentStatus =
       (badge.dataset.status as keyof typeof statusConfig) || "trabajando"
 
     const updateBadge = (status: keyof typeof statusConfig) => {
@@ -70,12 +70,6 @@ const {
     }
 
     updateBadge(currentStatus)
-
-    badge.onclick = () => {
-      currentStatus = currentStatus === "disponible" ? "trabajando" : "disponible"
-      updateBadge(currentStatus)
-      badge.dataset.status = currentStatus
-    }
   }
 
   setupBadge()

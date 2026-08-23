@@ -83,17 +83,21 @@ const jsonLd = {
     <title>{title}</title>
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <script is:inline>
-      const theme = (() => {
-        if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
-          return localStorage.getItem("theme")
-        }
-        return "system"
-      })()
-      const isDark =
-        theme === "dark" ||
-        (theme === "system" &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      document.documentElement.classList.toggle("dark", isDark)
+      const applyThemePreference = () => {
+        const theme =
+          (typeof localStorage !== "undefined" &&
+            localStorage.getItem("theme")) ||
+          "system"
+        const isDark =
+          theme === "dark" ||
+          (theme === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
+        document.documentElement.classList.toggle("dark", isDark)
+      }
+      applyThemePreference()
+      // Re-apply before paint after client-side view transitions so the theme
+      // does not reset when navigating (e.g. switching language).
+      document.addEventListener("astro:after-swap", applyThemePreference)
     </script>
     <LocaleRedirect locale={locale} />
     <ViewTransitions />
